@@ -1,0 +1,14 @@
+### List Categorized Pages - SETUP
+
+plugin.tx_categorypages_pi1{
+	templateFile = {$plugin.category_pages.templateFile}
+	fieldHandlingInc = {$plugin.category_pages.fieldHandlingInc}
+	orderType = {$plugin.category_pages.orderType}
+	orderAsc = {$plugin.category_pages.orderAsc}
+	booleanOperator = {$plugin.category_pages.booleanOperator}
+	maxPages = {$plugin.category_pages.maxPages}
+	resultsByRandom = {$plugin.category_pages.resultsByRandom}
+	displayFields = {$plugin.category_pages.displayFields}
+	notCategories = {$plugin.category_pages.notCategories}
+	paginator = {$plugin.category_pages.paginator}
+} 

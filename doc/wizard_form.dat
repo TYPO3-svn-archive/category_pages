@@ -1,0 +1,111 @@
+a:12:{s:4:"save";a:3:{s:13:"extension_key";s:14:"category_pages";s:18:"print_wop_comments";s:1:"1";s:15:"overwrite_files";a:19:{s:9:"ChangeLog";s:1:"1";s:10:"README.txt";s:1:"1";s:12:"ext_icon.gif";s:1:"1";s:17:"ext_localconf.php";s:1:"1";s:14:"ext_tables.php";s:1:"1";s:16:"locallang_db.xml";s:1:"1";s:19:"doc/wizard_form.dat";s:1:"1";s:20:"doc/wizard_form.html";s:1:"1";s:34:"pi1/class.tx_categorypages_pi1.php";s:1:"1";s:13:"locallang.xml";s:1:"1";s:14:"pi1/ce_wiz.gif";s:1:"1";s:42:"pi1/class.tx_categorypages_pi1_wizicon.php";s:1:"1";s:13:"pi1/clear.gif";s:1:"1";s:17:"pi1/locallang.xml";s:1:"1";s:24:"pi1/static/editorcfg.txt";s:1:"1";s:40:"static/List_Category_Pages/constants.txt";s:1:"1";s:36:"static/List_Category_Pages/setup.txt";s:1:"1";s:57:"static/List_Category_Pages__category_pages_/constants.txt";s:1:"1";s:53:"static/List_Category_Pages__category_pages_/setup.txt";s:1:"1";}}s:6:"emconf";a:1:{i:1;a:7:{s:5:"title";s:22:"List Categorized Pages";s:11:"description";s:183:"Provides a content element that shows a list of categorized pages and page meta information like abstract, description, images (from attached files) etc. depends on toi_category 0.4.0";s:8:"category";s:6:"plugin";s:5:"state";s:5:"alpha";s:12:"dependencies";s:12:"toi_category";s:6:"author";s:11:"Till Korten";s:12:"author_email";s:26:"webmaster@korten-privat.de";}}s:9:"languages";a:1:{i:1;a:45:{s:2:"ar";s:1:"0";s:2:"my";s:1:"0";s:2:"eu";s:1:"0";s:2:"ba";s:1:"0";s:2:"br";s:1:"0";s:2:"bg";s:1:"0";s:2:"ca";s:1:"0";s:2:"ch";s:1:"0";s:2:"hk";s:1:"0";s:2:"hr";s:1:"0";s:2:"cz";s:1:"0";s:2:"dk";s:1:"0";s:2:"nl";s:1:"0";s:2:"eo";s:1:"0";s:2:"et";s:1:"0";s:2:"fo";s:1:"0";s:2:"fi";s:1:"0";s:2:"fr";s:1:"0";s:2:"de";s:1:"1";s:2:"gr";s:1:"0";s:2:"gl";s:1:"0";s:2:"he";s:1:"0";s:2:"hi";s:1:"0";s:2:"hu";s:1:"0";s:2:"is";s:1:"0";s:2:"it";s:1:"0";s:2:"jp";s:1:"0";s:2:"kr";s:1:"0";s:2:"lv";s:1:"0";s:2:"lt";s:1:"0";s:2:"no";s:1:"0";s:2:"fa";s:1:"0";s:2:"pl";s:1:"0";s:2:"pt";s:1:"0";s:2:"ro";s:1:"0";s:2:"ru";s:1:"0";s:2:"sr";s:1:"0";s:2:"sk";s:1:"0";s:2:"si";s:1:"0";s:2:"es";s:1:"0";s:2:"se";s:1:"0";s:2:"th";s:1:"0";s:2:"tr";s:1:"0";s:2:"ua";s:1:"0";s:2:"vn";s:1:"0";}}s:2:"pi";a:1:{i:1;a:13:{s:5:"title";s:22:"List categorized pages";s:8:"title_de";s:28:"Liste Kategorisierter Seiten";s:13:"plus_user_obj";s:1:"1";s:23:"plus_not_staticTemplate";s:1:"0";s:8:"plus_wiz";s:1:"1";s:20:"plus_wiz_description";s:91:"Adds a list of pages (with abstract and other meta information) from one or more categories";s:23:"plus_wiz_description_de";s:118:"Erzeugt eine Liste aller seiten (inclusive abstract und anderen Metainformationen) aus einer oder mehreren Kategorien.";s:7:"addType";s:9:"list_type";s:8:"tag_name";s:0:"";s:12:"plus_user_ex";s:1:"0";s:12:"list_default";s:1:"0";s:21:"list_default_listmode";s:1:"0";s:23:"list_default_singlemode";s:1:"0";}}s:6:"module";a:0:{}s:14:"modulefunction";a:0:{}s:2:"cm";a:0:{}s:2:"sv";a:0:{}s:2:"ts";a:1:{i:1;a:3:{s:5:"title";s:36:"List Category Pages";s:9:"constants";s:813:"### List Category Pages
+
+plugin.category_pages {
+
+  # cat=plugin.category_pages//; type=options[asc,desc]; label= Order : Display contents in ascendent or descendant order.
+  orderAsc = desc
+
+  # cat=plugin.category_pages//; type=options[date,title]; label= Order field : Display contents ordered by date or title.
+  orderType = date
+  
+  # cat=plugin.category_pages//; type=int+; label= Abstract length : Number of chars of the abstract.
+  abstractLength = 100
+
+  # cat=plugin.category_pages//; type=int+; label= Max number : Threshold beyond which contents are displayed in abstract mode.
+  nbmax = 6
+  
+  # cat=plugin.category_pages//; type=string; label= Template file : HTML template used to display contents in abstract mode.
+  templateFile = typo3conf/ext/category_pages/template.tmpl
+
+}";s:5:"setup";s:3508:"### List Categorized Pages - SETUP
+
+includeLibs.category_pages = typo3conf/ext/category_pages/category_pages.php
+plugin.tx_categorypages_pi1.templateFile = {$plugin.category_pages.templateFile}
+plugin.tx_categorypages_pi1.nbmax = {$plugin.category_pages.nbmax}
+plugin.tx_categorypages_pi1.abstractLength = {$plugin.category_pages.abstractLength}
+plugin.tx_categorypages_pi1.orderType = {$plugin.category_pages.orderType}
+plugin.tx_categorypages_pi1.orderAsc = {$plugin.category_pages.orderAsc}
+ 
+    
+### PLUGIN DISPLAY OF "CATEGORIZED" CONTENTS
+
+	plugin.tx_categorypages_pi1 = CASE
+	plugin.tx_categorypages_pi1 {
+	
+		key.field = tx_categorypages_plugin_display
+		
+		# We used the display of TYPO 3 for complete contents
+		2 = CONTENT
+	    	2 < styles.content.get
+	    	2.table = tt_content
+	    	2.select {
+	      		pidInList = *
+	      		orderBy = sorting
+	      		whereCategoryIn = plugin
+	      		orderType = {$plugin.category_pages.orderType}
+	      		orderAsc = {$plugin.category_pages.orderAsc}
+	    	}
+		
+		# We used a PHP function for a tree or abstracted contents.
+		default = USER
+		default.userFunc = tx_categorypages_pi1->main
+		default.templateFile = {$plugin.category_pages.templateFile}
+		default.abstractLength = {$plugin.category_pages.abstractLength}
+		default.orderType = {$plugin.category_pages.orderType}
+		default.orderAsc = {$plugin.category_pages.orderAsc}
+	}
+
+
+
+
+### PAGE DISPLAY OF "CATEGORIZED" CONTENTS
+
+    temp.Categorization = COA
+
+    # List display
+    temp.Categorization.20 = COA
+    temp.Categorization.20.1 = USER
+    temp.Categorization.20.1.userFunc = user_category_pages_class->main
+    temp.Categorization.20.1.templateFile = {$plugin.category_pages.templateFile}
+    temp.Categorization.20.1.abstractLength = {$plugin.category_pages.abstractLength}
+    temp.Categorization.20.1.orderType = {$plugin.category_pages.orderType}
+    temp.Categorization.20.1.orderAsc = {$plugin.category_pages.orderAsc}
+    temp.Categorization.20.if {
+      value.field = uid
+      value.preUserFunc = user_category_pages_class->count
+      isLessThan = {$plugin.category_pages.nbmax}
+    }
+
+    # Complete content display
+    temp.Categorization.30 = COA
+    temp.Categorization.30.1 = CONTENT
+    temp.Categorization.30.1 < styles.content.get
+    temp.Categorization.30.1.table = tt_content
+    temp.Categorization.30.1.select {
+      pidInList = *
+      orderBy = sorting
+      whereCategoryIn = this
+      orderType = {$plugin.category_pages.orderType}
+      orderAsc = {$plugin.category_pages.orderAsc}
+    }
+    temp.Categorization.30.if {
+      value.field = uid
+      value.preUserFunc = user_category_pages_class->count
+      isGreaterThan = {$plugin.category_pages.nbmax}
+    }
+
+    # List display (if the number of pages is equal to the threshold number)
+    temp.Categorization.40 = COA
+    temp.Categorization.40.1 = USE
+    temp.Categorization.40.1.userFunc = user_category_pages_class->main
+    temp.Categorization.40.1.templateFile = {$plugin.category_pages.templateFile}
+    temp.Categorization.40.1.abstractLength = {$plugin.category_pages.abstractLength}
+    temp.Categorization.40.1.orderType = {$plugin.category_pages.orderType}
+    temp.Categorization.40.1.orderAsc = {$plugin.category_pages.orderAsc}
+    temp.Categorization.40.if {
+       value.field = uid
+       value.preUserFunc = user_category_pages_class->count
+       equals = {$plugin.category_pages.nbmax}
+    }
+
+";}}s:8:"tsconfig";a:0:{}s:6:"fields";a:0:{}s:6:"tables";a:0:{}}

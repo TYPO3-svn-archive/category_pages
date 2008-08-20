@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_categorypages_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="first">Erste</label>
+			<label index="last">Letzte</label>
+			<label index="page">Seite</label>
+			<label index="weiter">weiter</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="first">First</label>
+			<label index="last">Last</label>
+			<label index="page">Page</label>
+			<label index="weiter">suite</label>
+		</languageKey>
+		<languageKey index="it" type="array">
+			<label index="first">First</label>
+			<label index="last">Last</label>
+			<label index="page">Pagina</label>
+			<label index="weiter">di più</label>
+		</languageKey>
+		<languageKey index="en" type="array">
+			<label index="first">First</label>
+			<label index="last">Last</label>
+			<label index="page">Page</label>
+			<label index="weiter">continue</label>
+		</languageKey>
+	</data>
+</T3locallang>

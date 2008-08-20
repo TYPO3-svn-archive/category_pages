@@ -1,0 +1,35 @@
+### List Category Pages
+
+plugin.category_pages {
+
+  # cat=plugin.category_pages//; type=options[asc,desc]; label= Order : Display contents in ascendent or descendant order.
+  orderAsc = asc
+
+  # cat=plugin.category_pages//; type=options[date,title]; label= Order field : Display contents ordered by date or title.
+  orderType = title
+  
+  # cat=plugin.category_pages//; type=options[OR,AND]; label= Boolean Relation to fetch Pages : Get Pages either by the boolean "OR" or "AND".
+  booleanOperator = or
+  
+  # cat=plugin.category_pages//; type=string;; label= NOT Categories : Get Pages which are in x AND y but NOT those of subcat x->z.
+  notCategories = 
+  
+  # cat=plugin.category_pages//; type=string; label= Displayed Fields : Insert a comma separated list of field names from the pages table. These fields will be then displayed in the list. Note: equivalent ###markers### must be inserted into the template file.
+  displayFields = title, abstract, media
+  
+  # cat=plugin.category_pages//; type=number; label= Number of maximum pages to display : Insert a Number
+  maxPages = 
+  
+  # cat=plugin.category_pages//; type=number; label= Number of pages after which pagination comes into effect : Insert a Number
+  paginator = 20
+  
+  # cat=plugin.category_pages//; type=boolean; label= Get pages randomly : If set and the number of maxPages is smaller than the pages selected, results will be chosen randomly
+  resultsByRandom = false
+
+  # cat=plugin.category_pages//; type=file; label= Template file : HTML template used to display contents in abstract mode.
+  templateFile = typo3conf/ext/category_pages/template.tmpl
+
+  # cat=plugin.category_pages//; type=file; label= Field handling include file : php include file that contains the field handling code used during assembly of the content marker array. Only edit if you know exactly what you are doing!!!
+  fieldHandlingInc = typo3conf/ext/category_pages/fieldhandling.inc
+
+}

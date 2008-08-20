@@ -1,0 +1,18 @@
+<!--
+  Template of an abstract of a content
+  the ###field### placeholders must be named exactly like the database fields selected in the typoscript constants
+  so the image placeholder must be named ###media### since the image is stored in the media field of the page
+  additionally a ###typolink### field is needed to insert a reference to the page e.g.: index.php?id=49&L=0.
+  by default the fields are ###title###, ###abstract###, ###media### and the special field ###typolink###.
+-->
+
+<!--###BASE_TEMPLATE_ABSTRACT###-->
+  <h4><a href="###typolink###">###title###</a></h4>
+  <p>###media### ###abstract###</p>
+  <br>
+<!--###BASE_TEMPLATE_ABSTRACT###-->
+
+
+<!--###PAGINATOR### begin-->
+<p>###FIRST###&nbsp;<!--###PAGINATIONPAGES### begin-->###PAGINATIONPAGE###&nbsp;<!--###PAGINATIONPAGES### end-->###LAST###</p>
+<!--###PAGINATOR### end-->

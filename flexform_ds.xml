@@ -1,0 +1,199 @@
+<T3DataStructure>
+  <meta>
+    <langDisable>1</langDisable>
+  </meta>
+	<sheets>
+		<sDEF>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.title</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+					<displayFields>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.displayFields</label>
+							<config>
+								<type>input</type>
+								<size>15</size>
+								<eval>trim</eval>
+							</config>							
+						</TCEforms>
+					</displayFields>
+					<maxPages>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.maxPages</label>
+							<config>
+								<type>input</type>
+								<eval>trim</eval>
+								<size>4</size>
+								<max>4</max>
+							</config>
+						</TCEforms>
+					</maxPages>
+					<resultsByRandom>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.resultsByRandom</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.default</numIndex>
+										<numIndex index="1"></numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.resultsByRandomFalse</numIndex>
+										<numIndex index="1">false</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.resultsByRandomTrue</numIndex>
+										<numIndex index="1">true</numIndex>
+									</numIndex>
+								</items>
+							</config>							
+						</TCEforms>
+					</resultsByRandom>
+					<paginator>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.paginator</label><config>
+								<type>input</type>
+								<eval>trim</eval>
+								<size>13</size>
+								<checkbox></checkbox>
+							</config>
+						</TCEforms>
+					</paginator>
+					<templateFile>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.general.templateFile</label>
+							<config>
+								<type>group</type>
+								<internal_type>file</internal_type>
+								<allowed>tmpl,html,htm</allowed>
+								<max_size>100</max_size>
+								<uploadfolder>uploads/tx_categorypages</uploadfolder>
+								<maxitems>1</maxitems>
+								<size>1</size>
+								<selectedListStyle>Width:180px</selectedListStyle>
+							</config>
+						</TCEforms>
+					</templateFile>
+				</el>
+			</ROOT>
+		</sDEF>
+		<sBoolean>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>LLL:EXT:category_pages/locallang.xml:flexform.sheets.boolean.title</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+					<booleanOperator>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.boolean.booleanOperator</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.default</numIndex>
+										<numIndex index="1"></numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.boolean.booleanOperatorAnd</numIndex>
+										<numIndex index="1">and</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.boolean.booleanOperatorOr</numIndex>
+										<numIndex index="1">or</numIndex>
+									</numIndex>
+								</items>
+							</config>							
+						</TCEforms>
+					</booleanOperator>
+					<notCategories>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.boolean.notCategories</label>
+							<config>
+								<type>group</type>
+								<internal_type>db</internal_type>
+								<allowed>pages</allowed>
+								<size>5</size>
+								<maxitems>10</maxitems>
+								<minitems>0</minitems>
+							</config>							
+						</TCEforms>
+					</notCategories>
+				</el>
+			</ROOT>
+		</sBoolean>
+		<sSorting>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.title</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+					<orderType>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.orderType</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.default</numIndex>
+										<numIndex index="1"></numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.orderTypeTitle</numIndex>
+										<numIndex index="1">title</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.orderTypePID</numIndex>
+										<numIndex index="1">pid</numIndex>
+									</numIndex>
+									<numIndex index="3" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.orderTypePagetree</numIndex>
+										<numIndex index="1">sorting</numIndex>
+									</numIndex>
+								</items>
+							</config>							
+						</TCEforms>
+					</orderType>
+					<orderTypeOther>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.orderTypeOther</label>
+							<config>
+								<type>input</type>
+								<eval>trim</eval>
+								<size>13</size>
+								<checkbox>0</checkbox>
+							</config>							
+						</TCEforms>
+					</orderTypeOther>
+					<orderAsc>
+						<TCEforms>
+							<label>LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.sortingOrder</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.default</numIndex>
+										<numIndex index="1"></numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.sortingOrderAsc</numIndex>
+										<numIndex index="1">ASC</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">LLL:EXT:category_pages/locallang.xml:flexform.sheets.sorting.sortingOrderDesc</numIndex>
+										<numIndex index="1">DESC</numIndex>
+									</numIndex>
+								</items>
+							</config>
+						</TCEforms>
+					</orderAsc>
+				</el>
+			</ROOT>
+		</sSorting>
+	</sheets>
+</T3DataStructure>

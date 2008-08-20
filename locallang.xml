@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for extension 'category_pages'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pi1_title">List categorized pages</label>
+			<label index="pi1_plus_wiz_description">Adds a list of pages (with abstract and other meta information) from one or more categories</label>
+			<!-- Flexforms -->
+			<label index="flexform.sheets.default"></label>
+      		<label index="flexform.sheets.general.title">Basic Settings</label>
+      		<label index="flexform.sheets.boolean.title">Boolean Operations</label>
+      		<label index="flexform.sheets.sorting.title">Sorting</label>
+      		<label index="flexform.sheets.sorting.sortingOrder">Sorting Order</label>
+      		<label index="flexform.sheets.sorting.sortingOrderAsc">ASC</label>
+      		<label index="flexform.sheets.sorting.sortingOrderDesc">DESC</label>
+      		<label index="flexform.sheets.sorting.orderType">Order by</label>
+      		<label index="flexform.sheets.sorting.orderTypeTitle">Title</label>
+      		<label index="flexform.sheets.sorting.orderTypePID">Page ID</label>
+      		<label index="flexform.sheets.sorting.orderTypePagetree">Pagetree</label>
+      		<label index="flexform.sheets.sorting.orderTypeOther">Other Order Field</label>
+      		<label index="flexform.sheets.general.paginator">Paginate results</label>
+      		<label index="flexform.sheets.general.displayFields">Display Fields</label>
+      		<label index="flexform.sheets.general.templateFile">Template File</label>
+      		<label index="flexform.sheets.general.maxPages">Maximum Pages</label>
+      		<label index="flexform.sheets.general.resultsByRandom">Results by Random</label>
+      		<label index="flexform.sheets.general.resultsByRandomTrue">True</label>
+      		<label index="flexform.sheets.general.resultsByRandomFalse">False</label>
+      		<label index="flexform.sheets.boolean.booleanOperator">Boolean Operator</label>
+      		<label index="flexform.sheets.boolean.booleanOperatorAnd">AND</label>
+      		<label index="flexform.sheets.boolean.booleanOperatorOr">OR</label>
+      		<label index="flexform.sheets.boolean.notCategories">NOT Categories</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="pi1_title">Liste Kategorisierter Seiten</label>
+			<label index="pi1_plus_wiz_description">Erzeugt eine Liste aller seiten (inclusive abstract und anderen Metainformationen) aus einer oder mehreren Kategorien.</label>
+		</languageKey>
+	</data>
+</T3locallang>

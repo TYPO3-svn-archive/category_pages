@@ -1,0 +1,48 @@
+(add new changes on top of this file)
+08-08-20 Till Korten <webmaster@korten-privat.de>
+	* Bugfix: paginator last page showed an empty page
+	* Bugfix: empty flexform fields for maxPages and paginator would always overwrite typoscript values with 0
+	* moved boolean operators to their own flexform sheet
+	* merged version 2.3 with changes from Christopher Schnell
+		Changes by Christopher Schnell <christopher.schnell@mda.ch>:
+		* New feature: Paginator
+		* New Feature: added NOT Category for Pages, i.e.
+		  Display all pages in Cat A but not those in Cat B, even if they are in Cat A
+
+08-05-28 Till Korten <webmaster@korten-privat.de>
+	* bugfix: ###typolink### marker was empty for non-default languages (thanks to Philipp Metzler)
+	
+08-04-02 Till Korten <webmaster@korten-privat.de>
+	* added a hook for custom field handling via fieldhandling.inc (file location can be changed in a typoscript constant)
+
+08-03-04 Christopher Schnell	<christopher.schnell@mda.ch>
+	* Bugfix: orderTypeOther had no effect
+	* Bugfix: If no pages are in the category there was a PHP Warning
+
+08-02-17 Till Korten  <webmaster@korten-privat.de>
+	* Updated Manual
+		* included manual for new features by C Schnell
+		* fixed broken and bad quality images
+
+08-01-31 Christopher Schnell	<christopher.schnell@mda.ch>
+	* Moved static Template to static folder in pi1
+	* Renamed the config "booleanRelation" to "booleanOperator"
+	* Introduced init($config) method
+	* Introduced more settings and features:
+		* MaxPages lets the user decide, how many pages are to be displayed
+		  based on the orderType
+		* New orderType "sorting" (this is based on the page tree)
+		* ResultsByRandom gets the number of MaxPages from the pool of selected pages randomly 
+	* added Flexforms for configuration in Backend
+
+07-12-03 Christopher Schnell	<christopher.schnell@mda.ch>
+	* Added new parameter booleanRelation to the constant Editor
+	* Changed source to use boolean "AND" and "OR" to fetch the pages
+
+07-11-28 Till Korten  <webmaster@korten-privat.de>
+	* Runs stable so far, changed to beta status
+	* updated documentation
+
+07-03-08 Till Korten  <webmaster@korten-privat.de>
+
+	* Initial release
