@@ -1,4 +1,10 @@
 (add new changes on top of this file)
+08-10-26 Till Korten <webmaster@korten-privat.de>
+	Sponsored by www.goli.at - Typo3 & Webhosting (Thanks a lot!):
+	* fixed Bug: pagetree sorting did not work with language overlays.
+	* many small bugfixes: paginator, max pages, multiple plugins on one page
+	* feature improvement: AND works recursively now.
+
 08-08-20 Till Korten <webmaster@korten-privat.de>
 	* dependency on toi_category is now checked
 

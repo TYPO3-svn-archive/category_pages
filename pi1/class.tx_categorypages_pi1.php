@@ -35,9 +35,9 @@ require_once(t3lib_extMgm::extPath('toi_category').'api/class.tx_toicategory_api
  * @subpackage	tx_categorypages
  */
 class tx_categorypages_pi1 extends tslib_pibase {
-	var $prefixId      = 'tx_categorypages_pi1';				// Same as class name
+	var $prefixId	  = 'tx_categorypages_pi1';				// Same as class name
 	var $scriptRelPath = 'pi1/class.tx_categorypages_pi1.php';		// Path to this script relative to the extension dir.
-	var $extKey        = 'category_pages';					// The extension key.
+	var $extKey		= 'category_pages';					// The extension key.
 	var $uploadFolder  = 'uploads/tx_categorypages/';
 //	var $pi_checkCHash = true;
 //	var $displayType;							// List, abstract, complete
@@ -54,11 +54,13 @@ class tx_categorypages_pi1 extends tslib_pibase {
 	var $maxPages;
 	var $template;
 	var $fieldHandlingInc;							// include file which user can edit to create custom field handling. Remark from till: should only be editable via typoscript since this is an admin feature.
-	var $table = 'pages';
+	var $table = 'pages';							//is hardcoded into the class for now
 	var $recursive;
 	var $categories;							// the categories provided by cObj->data['pages']
 	var $paginator;
 	var $paginatorPage;
+	var $paginatorID;
+	var $numPages;
 
 	var $subpart = '###BASE_TEMPLATE_ABSTRACT###';	// the Subpart in the template
 	var $categoryApi;							// the Api to toi_categories
@@ -77,7 +79,7 @@ class tx_categorypages_pi1 extends tslib_pibase {
 		// do the default Stuff
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
-		$this->pi_USER_INT_obj=1;    // Configuring so caching is not expected. This value means that no cHash params are ever set. We do this, because it's a USER_INT object!
+		$this->pi_USER_INT_obj=1;	// Configuring so caching is not expected. This value means that no cHash params are ever set. We do this, because it's a USER_INT object!
 		// initialize FlexForm
 		$this->pi_initPIflexForm();
 		$piFlexForm = $this->cObj->data['pi_flexform'];
@@ -113,14 +115,14 @@ class tx_categorypages_pi1 extends tslib_pibase {
 		// get configuration from Typoscript parameters
 		$this->orderType = $this->conf['orderType'];
 		if($this->conf['orderTypeOther']){
-		    $this->orderType=$this->conf['orderTypeOther'];
+			$this->orderType=$this->conf['orderTypeOther'];
 		}
 		$this->orderAsc = strtoupper($this->conf['orderAsc']);
 		$this->booleanOperator = strtolower($this->conf['booleanOperator']);
 		$this->notCategories = $this->conf['notCategories'];
 		$this->displayFields = $this->conf['displayFields'];
 		$this->maxPages = (int)$this->conf['maxPages'];
-		$this->resultsByRandom = (boolean) $this->conf['resultsByRandom'];
+		$this->resultsByRandom = stristr($this->conf['resultsByRandom'],'true');
 		if($addupload==true){
 			$this->template = $this->cObj->fileResource($this->uploadFolder.$this->conf['templateFile']);
 		}
@@ -132,15 +134,17 @@ class tx_categorypages_pi1 extends tslib_pibase {
 		$this->language_uid = $GLOBALS['TSFE']->sys_language_uid;
 		
 		if (!empty($this->cObj->data['pages'])) {
-		    $this->categories = explode(',',$this->cObj->data['pages']);
+			$this->categories = explode(',',$this->cObj->data['pages']);
 		}
 
 		$this->paginator=(int)$this->conf['paginator'];
+		$this->paginatorID = 'paginatorPage'.$this->cObj->data['uid'];		//the paginator gets a unique ID, so that multiple paginators work on one page
 		
-		if($this->piVars==null){
-			$this->paginatorPage=0;
+		
+		if($this->piVars!=null && isset($this->piVars[$this->paginatorID])) {
+			$this->paginatorPage=$this->piVars[$this->paginatorID];
 		}else{
-			$this->paginatorPage=$this->piVars['paginatorPage'];
+			$this->paginatorPage=0;
 		}
 		
 		// get the Debugging Var from TS
@@ -154,6 +158,7 @@ class tx_categorypages_pi1 extends tslib_pibase {
 		if($this->debug){
 			debug($piFlexForm,'FlexForm', __LINE__, __FILE__, 5);
 			debug($this->conf,'Configuration Array');
+			//debug($this->cObj->data, 'cObj->data');
 			debug($this->categories, 'Categories');
 			debug($this->piVars, 'piVars');
 			debug($this->maxPages, 'maxPages');
@@ -185,20 +190,41 @@ class tx_categorypages_pi1 extends tslib_pibase {
 		// if we have NOT-Categories:
 		if(strlen(trim($this->notCategories))>0){
 			$notCatsArray=explode(',',$this->notCategories);
-			$dummyWhereClause='';
+			$notWhereClause='';
 			foreach($notCatsArray as $notCat){
-				$dummyWhereClause.='`tx_toicategory_toi_category` NOT regexp \'[[:<:]]'.$notCat.'[[:>:]]\' AND ';
+				$notWhereClause.='`tx_toicategory_toi_category` NOT regexp \'[[:<:]]'.$notCat.'[[:>:]]\' AND ';
 			}
-			$dummyWhereClause=substr($dummyWhereClause, 0, -5); 
+			$notWhereClause=substr($notWhereClause, 0, -5); 
 		}
 		
+		if($this->booleanOperator=="and" && count($this->categories)>1){
+			$andWhereClause='';
+			if ($this->recursive == 0) {
+				foreach ($this->categories as $andCat) {
+					$andWhereClause.= '`tx_toicategory_toi_category` LIKE \'%'.$andCat.'%\' AND ';
+				}
+				$andWhereClause=substr($andWhereClause, 0, -5);
+			} else {
+				foreach ($this->categories as $cat) {
+					$andWhereClause.= '`tx_toicategory_toi_category` LIKE \'%\' AND (`tx_toicategory_toi_category` LIKE \'%'.$cat.'%\' OR ';
+					$andCatTree = $this->categoryApi->get_category_tree($cat,$this->recursive);
+					foreach ($andCatTree as $andCat) {
+						$andWhereClause.= '`tx_toicategory_toi_category` LIKE \'%'.$andCat['uid'].'%\' OR ';
+					}
+					$andWhereClause=substr($andWhereClause, 0, -4).') AND ';
+				}
+				$andWhereClause=substr($andWhereClause, 0, -5);
+			}
+		}
+		$dummyWhereClause = (isset($notWhereClause, $andWhereClause)) ? $notWhereClause.' AND '.$andWhereClause : $notWhereClause.$andWhereClause ;
 		// SELECT uid FROM database where `tx_toicategory_toi_category` NOT regexp '[[:<:]]363[[:>:]]' AND `tx_toicategory_toi_category` NOT regexp '[[:<:]]362[[:>:]]';
 		if($this->debug){
-			debug($dummyWhereClause,'DummyWhereClause');
+			debug($dummyWhereClause,'notWhereClause');
+			debug($andCatTree,'and category tree');
 		}
 
 		foreach ($this->categories as $cat) {
-		    $dummyList[] = $this->categoryApi->get_data_from_categorys($cat,'pages',$dummyWhereClause,$this->recursive);
+			$dummyList[] = $this->categoryApi->get_data_from_categorys($cat,$this->table,$dummyWhereClause,$this->recursive);
 		}
 		
 		
@@ -215,20 +241,10 @@ class tx_categorypages_pi1 extends tslib_pibase {
 			return $this->pi_wrapInBaseClass($content);
 		}
 
-		// we now have a List with double Entries
-		// we wish to:
-		// either clear the list of the doubles or
-		if($this->booleanOperator=="or"){
-			$this->pageList=$this->removeDoubles($this->pageList);
-		}
-		else{
-			// show only the multiples and only those which are in ALL categories
-			// for that we have to count the categories
-			$numCats=count($this->categories);
-			// and see if a page is listed as often as we have categories
-			$this->pageList=$this->getArrayValueForCount($numCats, $this->pageList);
-		}
-		
+		// we now have a List, maybe with double Entries
+		// we wish to: clear the list of the doubles
+		$this->pageList=$this->removeDoubles($this->pageList);
+
 		if($this->debug){
 			debug($this->pageList,'pageList without doubles');
 		}
@@ -239,51 +255,114 @@ class tx_categorypages_pi1 extends tslib_pibase {
 			shuffle($this->pageList);
 			$this->pageList=array_slice($this->pageList,0,$this->maxPages);
 		}
+		if($this->debug){
+			debug($this->resultsByRandom,'$this->resultsByRandom');
+		}
 		
 		if ((is_array($this->pageList)) && (implode('',$this->pageList)!='')) {
 			// assemble the SQL-Statement
-			$sqlUids = "'".implode("','",$this->pageList)."'";
-		    $orderBy = 'ORDER BY '.$this->table.'.'.$this->orderType.' '.$this->orderAsc;
-		    $orderBy = $GLOBALS['TYPO3_DB']->quoteStr($orderBy, $this->table);
+			$sqlUids = "".implode(",",$this->pageList)."";
+			$orderBy = $this->table.'.'.$this->orderType.' '.$this->orderAsc;
+			$orderBy = $GLOBALS['TYPO3_DB']->quoteStr($orderBy, $this->table);
 
 			$limit='';
-		    
-		    if($this->paginator){
-		    	$limit=($this->paginator*$this->paginatorPage).','.$this->paginator;
-		    }
+			
 			if($this->maxPages>0){
-		    	$limit=$this->maxPages;
+				$limit=$this->maxPages;
+			}
+			if($this->paginator){
+				if($this->maxPages>0){
+					$limit=($this->paginator*($this->paginatorPage+1)>$this->maxPages) ? $this->paginator*$this->paginatorPage.','.($this->maxPages-$this->paginator*$this->paginatorPage) : $this->paginator*$this->paginatorPage.','.$this->paginator;
+				} else {
+					$limit=($this->paginator*$this->paginatorPage).','.$this->paginator;
+				}
 			}
 			
-			$this->displayFields = $GLOBALS['TYPO3_DB']->quoteStr($this->displayFields, $this->table);
-		    
-		    if ($this->language_uid==0) {
+			//$this->displayFields = $GLOBALS['TYPO3_DB']->quoteStr($this->displayFields, $this->table);
+			if ($this->language_uid==0) {
 				$sqlSelect = 'uid, '.$this->displayFields;
-				$sqlFrom = $this->table; //is hardcoded into the class for now
-				$sqlWhere = 'uid in ('.$sqlUids.') '.$GLOBALS['TSFE']->sys_page->enableFields($this->table).' '.$orderBy;
-		    }
-		    else {
-				$sqlSelect = 'pid, '.$this->displayFields;
-				$sqlFrom = $this->table.'_language_overlay';
-				$orderBy = 'ORDER BY pages_language_overlay.'.$this->orderType.' '.$this->orderAsc;
-				$sqlWhere = 'pid in ('.$sqlUids.') '.$GLOBALS['TSFE']->sys_page->enableFields($this->table.'_language_overlay').' '.$orderBy;
-		    }
-		    // get the Results
-		    //if($this->maxPages!=0){
-		    	$res = $TYPO3_DB->exec_SELECTquery($sqlSelect,$sqlFrom,$sqlWhere,null,null,$limit);
-		    //} else{
-		    //	$res = $TYPO3_DB->exec_SELECTquery($sqlSelect,$sqlFrom,$sqlWhere);
-		    //}
-		    while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
-		        $pageData[] = $row;
-		    }
-		    $TYPO3_DB->sql_free_result($res);
-		    
-		    $fields = explode(',',str_replace(' ','',$this->displayFields));
-		    $fields[] = 'uid';
-		    $content = $this->assembleContent($fields,$pageData);
+				$sqlFrom = $this->table;
+				$sqlWhere = 'uid in ('.$sqlUids.') ';
+				$sqlWhere = $GLOBALS['TYPO3_DB']->quoteStr($sqlWhere, $this->table).$GLOBALS['TSFE']->sys_page->enableFields($this->table);
+			}
+			else {
+				$langTable = $this->table.'_language_overlay';
+				
+				// since language_overlay does not necessarily have all fields, we need to check if we might have to get some fields from the original table for ordering
+				$query = 'SHOW COLUMNS FROM '.$langTable.' ;';
+				$res = $GLOBALS['TYPO3_DB']->sql_query($query);
+				if ($res) {
+					while ($defRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+						$avail_columns[] = $defRow['Field'];
+					}
+				}
+				$TYPO3_DB->sql_free_result($res);
+
+				$languageOverlayFields = implode(',', $avail_columns);
+
+				// also the sorting field in the pages_language_overlay does not reflect the page tree, so we will fetch that one from the pages table
+				if (!stristr($languageOverlayFields,$this->orderType) || strcasecmp($this->orderType,'sorting') == 0 ) {
+					$langDisplayFieldsArray = explode(',', $this->displayFields);
+					foreach ($langDisplayFieldsArray as $s) {						
+						$langDisplayFields.=$langTable.'.'.trim($s).', ';
+					}
+					$langDisplayFields=trim($langDisplayFields,', ');
+					$sqlSelect = $langTable.'.pid, '.$langDisplayFields;
+					$sqlFrom = $this->table.', '.$langTable;
+					$orderBy = $this->table.'.'.$this->orderType.' '.$this->orderAsc;
+					$sqlWhere = $this->table.'.uid='.$langTable.'.pid AND '.$langTable.'.pid in ('.$sqlUids.') ';
+					$sqlWhere = $GLOBALS['TYPO3_DB']->quoteStr($sqlWhere, $langTable).$GLOBALS['TSFE']->sys_page->enableFields($langTable);
+				} else {
+					$sqlSelect = 'pid, '.$this->displayFields;
+					$sqlFrom = $langTable;
+					$orderBy = $langTable.'.'.$this->orderType.' '.$this->orderAsc;
+					$sqlWhere = $langTable.'.pid in ('.$sqlUids.') ';
+					$sqlWhere = $GLOBALS['TYPO3_DB']->quoteStr($sqlWhere, $langTable).$GLOBALS['TSFE']->sys_page->enableFields($langTable);
+				}
+				if($this->debug){
+					debug($languageOverlayFields,'Language Overlay Fields');
+					debug($this->orderType, 'OrderType');
+					debug($orderTable, '$orderTable');
+					debug($this->table, 'table');
+				}
+			}
+
+			//SQL injection safety ($sqlWhere is quoted above):
+			$sqlSelect = $GLOBALS['TYPO3_DB']->quoteStr($sqlSelect, $this->table);
+			$sqlFrom = $GLOBALS['TYPO3_DB']->quoteStr($sqlFrom, $this->table);
+			$orderBy = $GLOBALS['TYPO3_DB']->quoteStr($orderBy, $this->table);
+
+			if($this->debug){
+				debug($sqlSelect,'sql select');
+				debug($sqlFrom, 'sql from');
+				debug($orderBy, 'order by');
+				debug($sqlWhere, 'sql where');
+				debug($limit, 'limit');
+			}
+			
+			//the total number of pages
+			if ($this->language_uid==0) {
+				$this->numPages = count($this->pageList);
+			} else {
+				//for other languages wee need to perform a sql query to get the number of pages that actually have an alternate language
+				$res = $TYPO3_DB->exec_SELECTquery('COUNT(*)',$sqlFrom,$sqlWhere);
+				$row = $TYPO3_DB->sql_fetch_assoc($res);
+				$this->numPages = (int)$row['COUNT(*)'];
+				$TYPO3_DB->sql_free_result($res);
+			}
+			$this->numPages = ($this->numPages>$this->maxPages && $this->maxPages>0) ? $this->maxPages : $this->numPages;
+			// get the Results
+			$res = $TYPO3_DB->exec_SELECTquery($sqlSelect,$sqlFrom,$sqlWhere,'',$orderBy,$limit);
+			while($row = $TYPO3_DB->sql_fetch_assoc($res)) {
+				$pageData[] = $row;
+			}
+			$TYPO3_DB->sql_free_result($res);
+			
+			$fields = explode(',',str_replace(' ','',$this->displayFields));
+			$fields[] = 'uid';
+			$content = $this->assembleContent($fields,$pageData);
 		} else {
-		    $content = '';
+			$content = '';
 		}
 		
 		// return the content for rendering
@@ -298,13 +377,12 @@ class tx_categorypages_pi1 extends tslib_pibase {
 	* @param	array			$pageList: empty array necessary for the recursion
 	* @return	array			retrieved data without duplicates
 	*/
-	//function getPageIDs($categories, $targetKey, $pageList) {
 	function getPageIDs($categories, $targetKey, $pageList) {
-	    if (is_array($categories)) {  	
+		if (is_array($categories)) {  	
 			$last = array_pop($categories);
 			// we found the targetkey
 			if (isset($last[$targetKey]) && is_array($last)) {
-		    	$pageList[] = $last[$targetKey];
+				$pageList[] = $last[$targetKey];
 			}
 			// we found an array, but it is not the one we want
 			// lets look inside recursively
@@ -317,10 +395,10 @@ class tx_categorypages_pi1 extends tslib_pibase {
 			if (sizeof($categories)<1) {
 			}
 			else {
-		    	$pageList = $this->getPageIDs($categories, $targetKey, $pageList);
+				$pageList = $this->getPageIDs($categories, $targetKey, $pageList);
 			}
-	    }
-	    return $pageList;
+		}
+		return $pageList;
 	}
 	
 	/**
@@ -380,21 +458,20 @@ class tx_categorypages_pi1 extends tslib_pibase {
 			if($i==$this->paginatorPage){
 				$marker_array_pages['###PAGINATIONPAGE###']=($this->pi_getLL('page').' '.($i+1));
 			}else{
-				$marker_array_pages['###PAGINATIONPAGE###']=$this->pi_linkTP_keepPIvars(($this->pi_getLL('page').' '.($i+1)),$overrulePIvars=array('paginatorPage'=>$i));
+				$marker_array_pages['###PAGINATIONPAGE###']=$this->pi_linkTP_keepPIvars(($this->pi_getLL('page').' '.($i+1)),$overrulePIvars=array($this->paginatorID=>$i));
 			}
 			$pageItem.=$this->cObj->substituteMarkerArray($subpart['PAGINATIONPAGES'],$marker_array_pages);
 		}
 		//$content.= $this->cObj->substituteSubpart($subpart['PAGINATOR'], '###PAGINATIONPAGES###',$pageItem);
 		$subpart['PAGINATIONPAGES']=$pageItem;
-		$marker_array['###FIRST###']=$this->pi_linkTP_keepPIvars($this->pi_getLL('first'),$overrulePIvars=array('paginatorPage'=>0));
-		//$marker_array['###FIRST###']=$this->pi_linkTP_keepPIvars($this->pi_getLL('first'),$overrulePIvars=array('paginator'=>$this->paginator+$this->paginator));
-		$marker_array['###LAST###']=$this->pi_linkTP_keepPIvars($this->pi_getLL('last'),$overrulePIvars=array('paginatorPage'=>$this->getNumPaginatorPages()-1));
+		$marker_array['###FIRST###']=$this->pi_linkTP_keepPIvars($this->pi_getLL('first'),$overrulePIvars=array($this->paginatorID=>0));
+		$marker_array['###LAST###']=$this->pi_linkTP_keepPIvars($this->pi_getLL('last'),$overrulePIvars=array($this->paginatorID=>$this->getNumPaginatorPages()-1));
 		if($this->debug){
-			debug($pageItem);
+			debug($pageItem,'Page item');
 			debug($subpart,'SUBPARTS');
 			debug($marker_array,'MARKERARRAY');
 		}
-		if(count($this->pageList)<=(int)$this->paginator){
+		if($this->numPages<=(int)$this->paginator){
 			$marker_array='';
 			$subpart='';
 		}else{
@@ -404,7 +481,7 @@ class tx_categorypages_pi1 extends tslib_pibase {
 	}
 	
 	function getNumPaginatorPages(){
-		return (ceil(count($this->pageList)/(int)$this->paginator));
+		return (ceil($this->numPages/(int)$this->paginator));
 	}
 	
 	/**
@@ -423,30 +500,30 @@ class tx_categorypages_pi1 extends tslib_pibase {
 			foreach ($pageData as $page){
 				if (is_array($fields)){
 					foreach ($fields as $field) {
-					    if ($this->fieldHandlingInc) {
+						if ($this->fieldHandlingInc) {
 						include $this->fieldHandlingInc;
-					    } else {
+						} else {
 						if (!strcmp($field,'media')) {
-			    				if(eregi('jpg|gif|png', $page[$field])) {
-		    						$this->conf['image.']['file'] = 'uploads/media/'.($page[$field]); //The image field name
+								if(eregi('jpg|gif|png', $page[$field])) {
+									$this->conf['image.']['file'] = 'uploads/media/'.($page[$field]); //The image field name
 								$theImgCode=$this->cObj->IMAGE($this->conf['image.']);
 								$marker_array['###'.$field.'###'] = $theImgCode;
-			    				} else {
+								} else {
 								$marker_array['###'.$field.'###'] = '';
 							}
-						} elseif (!strcmp($field,'uid')) {                                                                                                                          
-                                                        if ($this->language_uid==0) {                                                                                                                       
-                                                            $marker_array['###typolink###'] = $GLOBALS['TSFE']->cObj->getTypoLink_URL($page[$field]);                                                       
-                                                        } else {                                                                                                                                            
-                                                            $marker_array['###typolink###'] = $GLOBALS['TSFE']->cObj->getTypoLink_URL($page['pid']);                                                        
-                                                        }
-    						} else {
-			    				$marker_array['###'.$field.'###'] = $page[$field];
+						} elseif (!strcmp($field,'uid')) {																														  
+														if ($this->language_uid==0) {																													   
+															$marker_array['###typolink###'] = $GLOBALS['TSFE']->cObj->getTypoLink_URL($page[$field]);													   
+														} else {																																			
+															$marker_array['###typolink###'] = $GLOBALS['TSFE']->cObj->getTypoLink_URL($page['pid']);														
+														}
+							} else {
+								$marker_array['###'.$field.'###'] = $page[$field];
 						}
-					    }
+						}
 					}
 				}
-		    	$content .= $this->template2html($marker_array);
+				$content .= $this->template2html($marker_array);
 			}
 		}
 		if($this->paginator){
@@ -480,13 +557,13 @@ class tx_categorypages_pi1 extends tslib_pibase {
 	 * @return	string		the cleaned string.
 	 */
 	/*function clean_string($string,$legalChars='[a-z][A-Z][0-9] _') {
-	    $clean ='';
-	    $string = str_split($string);
-	    foreach ($string as $char) {
+		$clean ='';
+		$string = str_split($string);
+		foreach ($string as $char) {
 		if (!ereg($char, $legalChars)) $char=''; // bogus char? Make it empty
-    	    }
-	    $clean = implode('',$string);
-	    return $clean;
+			}
+		$clean = implode('',$string);
+		return $clean;
 	}*/
 
 
