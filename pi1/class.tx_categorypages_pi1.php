@@ -345,6 +345,7 @@ class tx_categorypages_pi1 extends tslib_pibase {
 				$this->numPages = count($this->pageList);
 			} else {
 				//for other languages wee need to perform a sql query to get the number of pages that actually have an alternate language
+				$sqlWhere .= ' AND sys_language_uid = ' . $this->language_uid;
 				$res = $TYPO3_DB->exec_SELECTquery('COUNT(*)',$sqlFrom,$sqlWhere);
 				$row = $TYPO3_DB->sql_fetch_assoc($res);
 				$this->numPages = (int)$row['COUNT(*)'];

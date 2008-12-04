@@ -1,4 +1,7 @@
 (add new changes on top of this file)
+08-10-26 Philipp Metzler (www.goli.at)
+	* fixed Bug: if more than one alternate page language is used, pages are listed double.
+
 08-10-26 Till Korten <webmaster@korten-privat.de>
 	Sponsored by www.goli.at - Typo3 & Webhosting (Thanks a lot!):
 	* fixed Bug: pagetree sorting did not work with language overlays.
